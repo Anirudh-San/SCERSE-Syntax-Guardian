@@ -8,16 +8,16 @@
 
 namespace SCERSE {
 
-struct SemanticSymbol {
+struct Symbol {
     std::string name;
     DataType type;
+    SymbolType symbolType;
     int scopeLevel;
 };
 
-
 class SymbolTable {
 private:
-    std::vector<std::unordered_map<std::string, SemanticSymbol>> scopes;
+    std::vector<std::unordered_map<std::string, Symbol>> scopes;
     int currentScopeLevel;
 
     void processNode(const std::shared_ptr<ASTNode>& node);
@@ -30,9 +30,9 @@ public:
 
     void enterScope();
     void exitScope();
-    bool declareSymbol(const std::string& name, const SemanticSymbol& symbol);
-    SemanticSymbol* lookupSymbol(const std::string& name);
-    std::vector<SemanticSymbol> getAllSymbols() const;
+    bool declareSymbol(const std::string& name, const Symbol& symbol);
+    Symbol* lookupSymbol(const std::string& name);
+    std::vector<Symbol> getAllSymbols() const;
     
     void buildFromAST(const std::shared_ptr<ASTNode>& root);
     void clear();

@@ -1,4 +1,5 @@
 #include "CodeEditor.hpp"
+#include "SyntaxHighlighter.hpp" 
 #include <QPainter>
 #include <QTextBlock>
 #include <QScrollBar>
@@ -11,7 +12,9 @@ CodeEditor::CodeEditor(QWidget *parent)
     : QPlainTextEdit(parent)
 {
     lineNumberArea = new LineNumberArea(this);
-
+    
+    syntaxHighlighter = new SyntaxHighlighter(this->document());
+    
     connect(this, &CodeEditor::blockCountChanged,
             this, &CodeEditor::updateLineNumberAreaWidth);
     connect(this, &CodeEditor::updateRequest,

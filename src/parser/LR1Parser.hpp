@@ -16,31 +16,56 @@ namespace SCERSE {
 struct ParseResult {
     std::shared_ptr<ASTNode> ast;
     std::vector<CompilerError> errors;
-    bool success = true;  // Added for compatibility with your code
+    bool success = true;
 };
 
 class LR1Parser {
-private:
-    Grammar grammar;
-    
-    // Parsing table: state -> (symbol -> action)
-    std::map<int, std::map<Symbol, Action>> actionTable;
-    std::map<int, std::map<Symbol, int>> gotoTable;
-    
-    // LR(1) states
-    std::vector<std::set<LR1Item>> states;
-    
-    void buildParsingTable();
-    std::set<LR1Item> closure(const std::set<LR1Item>& items);
-    std::set<LR1Item> gotoState(const std::set<LR1Item>& items, const Symbol& symbol);
-    int findOrAddState(const std::set<LR1Item>& state);
-    
-    Symbol tokenToSymbol(const Token& token);
-    std::shared_ptr<ASTNode> buildAST(const std::vector<std::shared_ptr<ASTNode>>& children, int productionId);
-    
 public:
     LR1Parser();
     ParseResult parse(const std::vector<Token>& tokens);
+
+private:
+    // Parser-local LR(1) item type to avoid name collisions with other headers
+    struct ParserLR1Item {
+        int productionId;
+        size_t dotPosition;
+        GrammarSymbol lookahead;
+
+        ParserLR1Item(int pid = 0, size_t dot = 0, const GrammarSymbol& la = GrammarSymbol())
+            : productionId(pid), dotPosition(dot), lookahead(la) {}
+
+        bool operator<(ParserLR1Item const& o) const {
+            if (productionId != o.productionId) return productionId < o.productionId;
+            if (dotPosition != o.dotPosition) return dotPosition < o.dotPosition;
+            return lookahead < o.lookahead; // relies on GrammarSymbol::operator<
+        }
+
+        bool operator==(ParserLR1Item const& o) const {
+            return productionId == o.productionId &&
+                   dotPosition == o.dotPosition &&
+                   lookahead == o.lookahead;
+        }
+    };
+
+    // Grammar instance (owned)
+    Grammar grammar;
+
+    // Parsing tables
+    std::map<int, std::map<GrammarSymbol, Action>> actionTable;
+    std::map<int, std::map<GrammarSymbol, int>> gotoTable;
+
+    // Canonical collection of LR(1) item sets (states)
+    std::vector<std::set<ParserLR1Item>> states;
+
+    // Core algorithms
+    void buildParsingTable();
+    std::set<ParserLR1Item> closure(const std::set<ParserLR1Item>& items);
+    std::set<ParserLR1Item> gotoState(const std::set<ParserLR1Item>& items, const GrammarSymbol& symbol);
+    int findOrAddState(const std::set<ParserLR1Item>& state);
+
+    // Helpers
+    GrammarSymbol tokenToGrammarSymbol(const Token& token) const;
+    std::shared_ptr<ASTNode> buildAST(const std::vector<std::shared_ptr<ASTNode>>& children, int productionId);
 };
 
 } // namespace SCERSE

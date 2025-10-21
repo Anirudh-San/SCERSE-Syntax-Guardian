@@ -1,4 +1,5 @@
 #pragma once
+
 #include <QPlainTextEdit>
 #include <QWidget>
 
@@ -10,6 +11,7 @@ QT_END_NAMESPACE
 namespace SCERSE {
 
 class LineNumberArea;
+class SyntaxHighlighter;  // ADD THIS LINE
 
 class CodeEditor : public QPlainTextEdit
 {
@@ -35,6 +37,7 @@ private slots:
 
 private:
     QWidget *lineNumberArea;
+    SyntaxHighlighter *syntaxHighlighter;  // ADD THIS LINE
 };
 
 class LineNumberArea : public QWidget

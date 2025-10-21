@@ -1,20 +1,20 @@
 #pragma once
 
-#include <QTimer>
-#include <QPlainTextEdit>
 #include <QMainWindow>
+#include <QTimer>
+#include <QLabel>
 #include <QListWidget>
 #include "../lexer/Lexer.hpp"
 #include "../common/Error.hpp"
-
-#include "gui/SymbolTableView.hpp"
-#include "recovery/SuggestionEngine.hpp"
+#include "SymbolTableView.hpp"
+#include "../recovery/SuggestionEngine.hpp"
 #include "../semantic/SymbolTable.hpp"
 
 QT_BEGIN_NAMESPACE
 class QAction;
 class QMenu;
 class QLabel;
+class QSplitter;
 QT_END_NAMESPACE
 
 namespace SCERSE {
@@ -32,51 +32,56 @@ public:
     ~MainWindow();
 
 private slots:
-    void onCodeChanged();                  // Called whenever code is edited
-    void highlightErrorLine(int lineNumber);  // Highlight a line when error clicked
-    void onEditorTextChanged();
-    void runCompilerPipeline();
+    void onEditorTextChanged();           // Called when editor text changes
+    void runCompilerPipeline();           // Main analysis function
+    void highlightErrorLine(int lineNumber); // Highlight error in editor
+    void onSuggestionClicked(QListWidgetItem *item); // Handle suggestion clicks
 
 private:
-
-    // Editor widget
+    // UI Components
     CodeEditor *codeEditor;
-
-    // Error console widget
     ErrorConsole *errorConsole;
-
-    // Symbol table view widget
     SymbolTableView *symbolTableView;
-
-    // Timer
+    QListWidget *suggestionsList;
+    QSplitter *mainSplitter;
+    
+    // Timer for debounced compilation
     QTimer *compileTimer;
-
+    
     // Menus
     QMenu *fileMenu;
+    QMenu *editMenu;
     QMenu *helpMenu;
-
+    
     // Actions
     QAction *exitAction;
     QAction *aboutAction;
-
-    //For Suggestions IRT
-    QListWidget *suggestionsList;
-
+    QAction *openFileAction;
+    QAction *saveFileAction;
+    
     // Status bar elements
     QLabel *statusLabel;
-
-    // Suggestion engine
+    QLabel *lineColLabel;
+    
+    // Backend components
     SuggestionEngine suggestionEngine;
-
-    // Current symbol table
     SymbolTable currentSymbolTable;
-
-    // Helper functions (optional)
+    
+    // Current file path
+    QString currentFilePath;
+    
+    // Helper functions
     void createMenus();
     void createStatusBar();
     void setupConnections();
-
-    //For IRT Suggestions
+    void updateStatusBar();
+    void displaySuggestions(const std::vector<std::string>& suggestions);
+    
+    // File operations
+    void openFile();
+    void saveFile();
+    
+    // Utility
     int extractLineFromSuggestion(const QString& suggestion);
 };
 

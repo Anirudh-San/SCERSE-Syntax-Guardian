@@ -18,6 +18,11 @@ struct SourcePosition {
 enum class ASTNodeType {
     // Program structure
     PROGRAM,
+    STATEMENT_LIST,
+    STATEMENT,
+    EXPRESSION,
+    TERM,
+    FACTOR,
     
     // Declarations
     VARIABLE_DECLARATION,
