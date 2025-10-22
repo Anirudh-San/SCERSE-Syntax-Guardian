@@ -29,12 +29,13 @@ struct GrammarSymbol {
         : type(GrammarSymbolType::NON_TERMINAL), name(n), tokenType(TokenType::EOF_TOKEN) {}
 
     bool operator<(const GrammarSymbol& other) const {
-        return name < other.name;
+    return name < other.name;   // ← Compare name only
     }
 
     bool operator==(const GrammarSymbol& other) const {
-        return name == other.name && type == other.type;
+    return name == other.name;  // ← Compare name only
     }
+
 };
 
 // Production rule: LHS -> RHS
@@ -107,6 +108,11 @@ public:
 
     bool isTerminal(const GrammarSymbol& symbol) const;
     bool isNonTerminal(const GrammarSymbol& symbol) const;
+
+    size_t getProductionCount() const 
+    {
+    return productions.size();
+    }
 };
 
 } // namespace SCERSE

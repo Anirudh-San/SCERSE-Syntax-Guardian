@@ -64,7 +64,7 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument* parent)
 void SyntaxHighlighter::highlightBlock(const QString &text)
 {
     // Apply all highlighting rules
-    for (const HighlightingRule &rule : qAsConst(highlightingRules)) {
+    for (const HighlightingRule &rule : std::as_const(highlightingRules)) {
         QRegularExpressionMatchIterator matchIterator = rule.pattern.globalMatch(text);
         while (matchIterator.hasNext()) {
             QRegularExpressionMatch match = matchIterator.next();
